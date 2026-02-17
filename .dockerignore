@@ -1,0 +1,65 @@
+# Git
+.git
+.gitignore
+
+# Documentation
+README.md
+README2.md
+*.md
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# Dependency directories
+node_modules/
+target/
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+
+# Docker files
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Shell scripts
+*.sh
+
+# Temporary files
+*.tmp
+*.temp
+
+
+

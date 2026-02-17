@@ -1,0 +1,100 @@
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: service_platform_mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: service_platform
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - service_platform_network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Spring Boot Backend
+  backend:
+    build:
+      context: ./service-platform
+      dockerfile: Dockerfile
+    container_name: service_platform_backend
+    restart: unless-stopped
+    environment:
+      SPRING_DATA_MONGODB_HOST: mongodb
+      SPRING_DATA_MONGODB_PORT: 27017
+      SPRING_DATA_MONGODB_DATABASE: service_platform
+      SPRING_DATA_MONGODB_USERNAME: admin
+      SPRING_DATA_MONGODB_PASSWORD: password123
+      SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE: admin
+      SERVER_PORT: 8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - service_platform_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # React Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: service_platform_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - service_platform_network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Redis for caching (optional)
+  redis:
+    image: redis:7-alpine
+    container_name: service_platform_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - service_platform_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  service_platform_network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local
+  redis_data:
+    driver: local

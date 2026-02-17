@@ -1,0 +1,51 @@
+# Git
+.git
+.gitignore
+
+# Documentation
+README.md
+*.md
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Maven
+target/
+.mvn/
+mvnw
+mvnw.cmd
+
+# Docker files
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Shell scripts
+*.sh
+
+# Temporary files
+*.tmp
+*.temp
+
+# Test files
+src/test/
+
+
+
